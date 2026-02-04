@@ -5,45 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sertifikasi Rai Fitness 2026 - Quiz System</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #e74c3c; --secondary: #3498db; --success: #27ae60; --light: #f4f7f6; }
-        body { font-family: sans-serif; background: var(--light); display: flex; justify-content: center; padding: 20px; }
-        .quiz-container { background: white; max-width: 600px; width: 100%; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        :root { --primary: #2c3e50; --accent: #e74c3c; --secondary: #3498db; --success: #27ae60; --light: #f4f7f6; --gray: #95a5a6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--light); display: flex; justify-content: center; padding: 20px; }
+        .quiz-container { background: white; max-width: 650px; width: 100%; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
         .header { background: var(--primary); color: white; padding: 20px; text-align: center; }
-        .progress-bar { height: 5px; background: var(--secondary); width: 0%; transition: 0.3s; }
-        .content { padding: 30px; }
-        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; background: white; }
-        .option-btn:hover { border-color: var(--secondary); }
-        .correct { border-color: var(--success) !important; background: #eafaf1; }
-        .wrong { border-color: var(--accent) !important; background: #fdedec; }
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; border-left: 5px solid #ddd; }
-        .controls { display: flex; justify-content: space-between; margin-top: 20px; }
-        .next-btn { background: var(--secondary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: none; }
-        .hint-text { background: #fff9db; padding: 10px; margin-top: 10px; display: none; border-radius: 5px; font-style: italic; }
-        .score-card { text-align: center; display: none; padding: 40px; }
+        .progress-bar { height: 6px; background: var(--secondary); width: 0%; transition: 0.4s ease; }
+        .content { padding: 30px; min-height: 400px; }
+        .question-number { font-weight: bold; color: var(--secondary); margin-bottom: 10px; display: block; }
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; background: white; font-size: 1rem; }
+        .option-btn:hover:not([disabled]) { border-color: var(--secondary); background: #f0f7ff; }
+        .correct { border-color: var(--success) !important; background: #eafaf1 !important; color: #155724; font-weight: bold; }
+        .wrong { border-color: var(--accent) !important; background: #fdedec !important; color: #721c24; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 8px; border-left: 5px solid #ddd; animation: fadeIn 0.5s; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; gap: 10px; }
+        .btn-action { padding: 10px 20px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; transition: 0.3s; }
+        .next-btn { background: var(--secondary); color: white; }
+        .back-btn { background: var(--gray); color: white; }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        .hint-text { background: #fff9db; padding: 12px; margin-top: 15px; border-radius: 6px; font-style: italic; color: #856404; display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .score-card { text-align: center; display: none; padding: 50px 20px; }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
-    <div class="header"><h3>Simulasi Sertifikasi 2026</h3></div>
+    <div class="header"><h2>Simulasi Sertifikasi 2026</h2></div>
     <div class="progress-bar" id="progressBar"></div>
     
     <div id="quizContent" class="content">
-        <div id="questionNumber" style="font-weight:bold; color: var(--secondary)"></div>
-        <h2 id="questionText"></h2>
+        <span id="questionNumber" class="question-number"></span>
+        <h3 id="questionText"></h3>
         <div id="optionsContainer"></div>
         <div id="hintBox" class="hint-text"></div>
-        <div id="feedbackBox" class="feedback"></div>
+        <div id="feedbackBox" class="feedback" style="display: none;"></div>
+        
         <div class="controls">
-            <button onclick="toggleHint()" style="background:none; border:none; color:orange; cursor:pointer">💡 Hint</button>
-            <button id="nextBtn" class="next-btn" onclick="nextQuestion()">Next &rarr;</button>
+            <div>
+                <button id="backBtn" class="btn-action back-btn" onclick="prevQuestion()" disabled>&larr; Back</button>
+                <button onclick="toggleHint()" style="background:none; border:none; color:#f39c12; cursor:pointer; font-weight:bold; margin-left:10px;">💡 Hint</button>
+            </div>
+            <button id="nextBtn" class="btn-action next-btn" onclick="nextQuestion()">Next &rarr;</button>
         </div>
     </div>
 
     <div id="scoreCard" class="score-card">
         <h1>Selesai!</h1>
-        <div id="finalScore" style="font-size: 3rem; margin: 20px;"></div>
-        <button onclick="location.reload()" class="next-btn" style="display:inline-block">Ulangi</button>
+        <p>Skor Anda:</p>
+        <div id="finalScore" style="font-size: 4rem; margin: 20px; font-weight: bold; color: var(--secondary);"></div>
+        <button onclick="location.reload()" class="btn-action next-btn" style="padding: 15px 40px;">Ulangi Simulasi</button>
     </div>
 </div>
 
@@ -51,48 +61,68 @@
 <script>
     let currentIdx = 0;
     let score = 0;
-    let answered = false;
+    let userAnswers = []; // Menyimpan status jawaban pengguna
 
     function loadQuestion() {
-        answered = false;
         const q = questions[currentIdx];
         document.getElementById('questionNumber').innerText = `SOAL ${currentIdx + 1} / ${questions.length}`;
         document.getElementById('questionText').innerText = q.q;
-        document.getElementById('progressBar').style.width = `${((currentIdx)/questions.length)*100}%`;
+        document.getElementById('progressBar').style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
+        
+        // Atur tombol Back
+        document.getElementById('backBtn').disabled = (currentIdx === 0);
         
         const container = document.getElementById('optionsContainer');
         container.innerHTML = '';
+        
+        const fb = document.getElementById('feedbackBox');
+        const hint = document.getElementById('hintBox');
+        hint.style.display = 'none';
+
+        // Cek apakah soal ini sudah pernah dijawab
+        const previousAnswer = userAnswers[currentIdx];
+
         q.options.forEach((opt, i) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt.text;
-            btn.onclick = () => check(i, opt.correct, opt.reason);
+            
+            if (previousAnswer !== undefined) {
+                // Jika sudah dijawab, tampilkan hasilnya dan matikan klik
+                btn.disabled = true;
+                if (opt.correct) btn.classList.add('correct');
+                if (i === previousAnswer && !opt.correct) btn.classList.add('wrong');
+            } else {
+                btn.onclick = () => check(i, opt.correct, opt.reason);
+            }
             container.appendChild(btn);
         });
-        
-        document.getElementById('feedbackBox').style.display = 'none';
-        document.getElementById('hintBox').style.display = 'none';
-        document.getElementById('nextBtn').style.display = 'none';
+
+        if (previousAnswer !== undefined) {
+            const isCorrect = q.options[previousAnswer].correct;
+            showFeedback(isCorrect, q.options[previousAnswer].reason || q.options.find(o => o.correct).reason);
+            document.getElementById('nextBtn').innerText = (currentIdx === questions.length - 1) ? "Finish" : "Next →";
+            document.getElementById('nextBtn').style.display = 'block';
+        } else {
+            fb.style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+        }
     }
 
     function check(idx, isCorrect, reason) {
-        if(answered) return;
-        answered = true;
-        const buttons = document.getElementsByClassName('option-btn');
-        if(isCorrect) {
-            buttons[idx].classList.add('correct');
-            score++;
-        } else {
-            buttons[idx].classList.add('wrong');
-            // Show correct one
-            const correctIdx = questions[currentIdx].options.findIndex(o => o.correct);
-            buttons[correctIdx].classList.add('correct');
-        }
+        userAnswers[currentIdx] = idx; // Simpan jawaban
+        if (isCorrect) score++;
+        
+        // Re-load question untuk menerapkan style "sudah dijawab"
+        loadQuestion();
+    }
+
+    function showFeedback(isCorrect, reason) {
         const fb = document.getElementById('feedbackBox');
         fb.style.display = 'block';
-        fb.innerHTML = `<strong>${isCorrect ? 'BENAR!' : 'OPS!'}</strong><br>${reason}`;
+        fb.innerHTML = `<strong>${isCorrect ? '✅ BENAR' : '❌ KURANG TEPAT'}</strong><br>${reason}`;
         fb.style.borderColor = isCorrect ? 'var(--success)' : 'var(--accent)';
-        document.getElementById('nextBtn').style.display = 'block';
+        fb.style.background = isCorrect ? '#eafaf1' : '#fdedec';
     }
 
     function toggleHint() {
@@ -102,9 +132,19 @@
     }
 
     function nextQuestion() {
-        currentIdx++;
-        if(currentIdx < questions.length) loadQuestion();
-        else showScore();
+        if (currentIdx < questions.length - 1) {
+            currentIdx++;
+            loadQuestion();
+        } else {
+            showScore();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            loadQuestion();
+        }
     }
 
     function showScore() {
